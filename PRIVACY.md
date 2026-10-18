@@ -47,3 +47,8 @@ Se versões futuras mudarem a coleta, transmissão, retenção ou tratamento de 
 ## 10. Contato
 
 Para dúvidas, solicitações e suporte relacionados à privacidade: **[nymostudioficial@gmail.com](mailto:nymostudioficial@gmail.com)**.
+
+
+## Serviço web experimental (Cloudflare)
+
+Ao usar no site a opção de colar um link de postagem pública do X, a URL informada é enviada ao Worker XClip na Cloudflare para consultar metadados públicos. Quando o usuário solicita download ou edição a partir do link, o Worker pode encaminhar o arquivo de vídeo pela infraestrutura da Cloudflare. A Cloudflare poderá tratar dados técnicos de rede associados à solicitação. Esse fluxo é diferente da edição de arquivos locais, que permanece no dispositivo. Esta integração é experimental e pode ficar indisponível caso o X altere seus endpoints.
