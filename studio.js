@@ -38,7 +38,7 @@
     try{const data=await getJson(`${apiBase()}/api/resolve?url=${encodeURIComponent(raw)}`);
       if(!Array.isArray(data.formats)||!data.formats.length)throw Error(t('noFormats'));
       formats=data.formats;activeTweet=data.tweetId;const select=$('quality');select.replaceChildren();for(const f of formats){const opt=document.createElement('option');opt.value=f.id;opt.textContent=f.label;select.append(opt);} $('resolved').hidden=false;linkStatus(data.notice||t('ready'),'success');
-    }catch(e){linkStatus(e.message||t('error'),'error');}finally{$('resolve').disabled=false;}
+    }catch(e){linkStatus(t('error')+' Tente outro post público com MP4, ou selecione um vídeo do aparelho. '+(e.message||''),'error');}finally{$('resolve').disabled=false;}
   });
   const videoUrl=()=>`${apiBase()}/api/video?tweet=${encodeURIComponent(activeTweet)}&q=${encodeURIComponent($('quality').value)}`;
   $('downloadDirect').addEventListener('click',()=>{
