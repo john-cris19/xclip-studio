@@ -1,2 +1,1 @@
-// Servidor experimental para publicações públicas do X; não garante MP4 em todos os links.
-window.XCLIP_CONFIG = Object.freeze({apiBaseUrl:'https://xclip-link-beta.johncrissaints.workers.dev'});
+// Experimental resolver: public X MP4 only. Uses Cloudflare and public FxEmbed metadata fallback.\nwindow.XCLIP_CONFIG = Object.freeze({apiBaseUrl:'https://xclip-link-fallback.johncrissaints.workers.dev'});\n
