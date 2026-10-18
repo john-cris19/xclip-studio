@@ -1,17 +1,23 @@
 # XClip Studio
 
-Extensão independente para baixar vídeos MP4 de postagens do X/Twitter e, opcionalmente, editá-los no navegador.
+XClip é uma extensão independente para baixar vídeos MP4 públicos do X/Twitter e editar vídeos ou criar GIFs no navegador.
 
-**Status:** beta 1.2.0 — testes de compatibilidade e revisão de loja pendentes.
+## Status — 18/10/2026
 
-## Política de privacidade
+- **Microsoft Edge Add-ons:** versão 1.3.0 enviada e em análise.
+- **Chrome Web Store:** versão 1.3.0 enviada e com revisão pendente.
+- **Versão de desenvolvimento 1.4.0:** barra minimalista integrada ao X, GIF direto (primeiros 8 segundos), timeline com duas alças, nomes de arquivo aprimorados e Pix opcional. **Não enviada às lojas ainda.**
+- **Site:** XClip Studio 1.4 publicado a partir do diretório raiz deste repositório. A geração de GIF com arquivos locais foi testada. A resolução de links públicos do X é experimental.
 
-- [Ler a política de privacidade](PRIVACY.md)
-- [Abrir a página de privacidade](index.html)
-- **Suporte:** [nymostudioficial@gmail.com](mailto:nymostudioficial@gmail.com)
+## Endereços
 
-O XClip não tem vínculo oficial com o X/Twitter ou com a Microsoft.
+- [Site XClip Studio](https://john-cris19.github.io/xclip-studio/)
+- [Política de privacidade](https://john-cris19.github.io/xclip-studio/privacy.html)
+- [Como instalar a beta manualmente](BETA-INSTALACAO.md)
+- Suporte: [nymostudioficial@gmail.com](mailto:nymostudioficial@gmail.com)
 
-## Publicar o site
+## Limitações importantes
 
-No repositório, acesse **Settings → Pages → Build and deployment → Deploy from a branch**; selecione **main** e **/(root)** e salve. O endereço esperado será `https://john-cris19.github.io/xclip-studio/` depois da implantação.
+O GIF direto abre um processamento em uma aba inativa e pode demorar conforme o navegador. Nem todos os posts do X expõem MP4 compatível, e o XClip não contorna DRM. A resolução de links no site consulta um serviço experimental Cloudflare, que pode usar metadados públicos do FxEmbed/FxTwitter, conforme descrito na política de privacidade.
+
+O projeto não tem vínculo oficial com o X/Twitter, Google ou Microsoft. Respeite os direitos dos autores.
