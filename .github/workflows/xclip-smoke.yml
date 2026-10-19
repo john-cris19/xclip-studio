@@ -57,3 +57,11 @@ jobs:
                 except Exception as e:print(id,url[:55],status,text[:180],flush=True)
               except Exception as e:print(id,url[:55],'ERROR',str(e)[:150],flush=True)
           PY
+
+      - name: Check Cloudflare worker upstream diagnostics
+        shell: bash
+        run: |
+          curl -fsSL --max-time 30 "https://xclip-link-fallback.johncrissaints.workers.dev/api/debug?id=2111668932268687822"
+          echo
+          curl -fsSL --max-time 30 "https://xclip-link-fallback.johncrissaints.workers.dev/api/debug?id=2111795836464288080"
+          echo
