@@ -65,3 +65,21 @@ jobs:
           echo
           curl -fsSL --max-time 30 "https://xclip-link-fallback.johncrissaints.workers.dev/api/debug?id=2111795836464288080"
           echo
+
+      - name: Verify actual MP4 bytes returned by Cloudflare
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request, urllib.error, json, urllib.parse
+          base='https://xclip-link-fallback.johncrissaints.workers.dev'
+          for post in ['2111795836464288080','2111961692557222032','2111668932268687822','2111985924766634420']:
+            try:
+              u=base+'/api/resolve?url='+urllib.parse.quote('https://x.com/user/status/'+post,safe='')
+              with urllib.request.urlopen(u,timeout=30) as r: data=json.load(r)
+              print('resolve',post,data.get('formats'),flush=True)
+              if not data.get('formats'):continue
+              with urllib.request.urlopen(base+'/api/video?tweet='+post+'&q=q0',timeout=40) as r:
+                prefix=r.read(32);print('MP4 STREAM',post,r.status,r.headers.get('content-type'),prefix.hex(),flush=True)
+            except urllib.error.HTTPError as e:print('HTTP ERROR',post,e.code,e.read(350),flush=True)
+            except Exception as e:print('ERROR',post,repr(e),flush=True)
+          PY
