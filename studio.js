@@ -89,6 +89,15 @@
   function waitEvent(el,name,ms=14000){return new Promise((res,rej)=>{const timer=setTimeout(()=>{clean();rej(Error('Video timeout'));},ms);function clean(){clearTimeout(timer);el.removeEventListener(name,onSuccess);el.removeEventListener('error',onError);}function onSuccess(){clean();res();}function onError(){clean();rej(Error('Video decoding error'));}el.addEventListener(name,onSuccess,{once:true});el.addEventListener('error',onError,{once:true});});}
   async function loadBlob(blob,name){if(!blob.size)throw Error('Empty file');if(srcBlob)URL.revokeObjectURL(srcBlob);srcBlob=URL.createObjectURL(blob);currentSource={name,size:blob.size};video.src=srcBlob;video.load();await waitEvent(video,'loadedmetadata');const dur=Number(video.duration);if(!(dur>.05)||!video.videoWidth)throw Error('Invalid video');$('noVideo').hidden=true;video.style.display='block';$('export').disabled=false;
     $('start-slider').max=String(dur);$('end-slider').max=String(dur);$('end').value=String(Math.round(dur*10)/10);$('end').max=String(dur);$('start').max=String(Math.max(0,dur-.1));$('whole').checked=true;syncTrim();$('gif8Local').disabled=false;$('gifFullLocal').disabled=false;$('videoMeta').textContent=`${name} · ${video.videoWidth}×${video.videoHeight} · ${Math.ceil(dur)}s · ${(blob.size/1048576).toFixed(1)} MB`;editorStatus(t('ready'),'success');}
+  function clipRange(){const dur=Number(video.duration)||0;return $('whole').checked?{start:0,end:dur}:{start:Number($('start').value)||0,end:Number($('end').value)||dur};}
+  function syncPreview(){const rg=clipRange(),length=Math.max(0,rg.end-rg.start),elapsed=Math.max(0,Math.min(length,video.currentTime-rg.start));
+    $('clip-player').hidden=$('whole').checked||!video.duration;video.controls=$('whole').checked;
+    $('clip-clock').textContent=`${ts(elapsed)} / ${ts(length)}`;
+    $('clip-seek').value=String(length?100*elapsed/length:0);
+    $('clip-play').textContent=video.paused?'▶':'Ⅱ';}
+  $('clip-play').addEventListener('click',async()=>{const r=clipRange();if(video.paused){if(video.currentTime<r.start-.04||video.currentTime>=r.end-.04)video.currentTime=r.start;try{await video.play()}catch{}}else video.pause();syncPreview()});
+  $('clip-seek').addEventListener('input',()=>{const r=clipRange();video.currentTime=r.start+(r.end-r.start)*Number($('clip-seek').value)/100;syncPreview()});
+  video.addEventListener('timeupdate',()=>{if(!exporting&&!$('whole').checked){const r=clipRange();if(video.currentTime>=r.end-.04){video.pause();video.currentTime=r.start;}}syncPreview()});video.addEventListener('pause',syncPreview);video.addEventListener('play',syncPreview);
   function ts(sec){const v=Math.floor(Math.max(0,Number(sec)||0));return `${Math.floor(v/60)}:${String(v%60).padStart(2,'0')}`;}
   function syncTrim(which){
     const total=Number(video.duration)||0;const whole=$('whole').checked;
@@ -103,8 +112,8 @@
     $('start-slider').value=String(a);$('end-slider').value=String(b);
     $('trim-rail').style.setProperty('--a',`${a/total*100}%`);
     $('trim-rail').style.setProperty('--b',`${b/total*100}%`);
-    $('trim-duration').textContent=`${ts(a)} – ${ts(b)}`;
-    $('total-time').textContent=ts(total);
+    $('trim-duration').textContent=`${ts(b-a)} · ${(b-a).toFixed(1)} s`; 
+    $('total-time').textContent=ts(total);syncPreview();
   }
   $('whole').addEventListener('change',()=>syncTrim());
   for (const id of ['start','end']) $(id).addEventListener('input',()=>syncTrim(id));
