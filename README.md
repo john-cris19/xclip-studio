@@ -5,8 +5,8 @@ XClip é uma extensão independente para baixar vídeos MP4 públicos do X/Twitt
 ## Status — 18/10/2026
 
 - **Microsoft Edge Add-ons:** versão 1.3.0 enviada e em análise.
-- **Chrome Web Store:** versão 1.3.0 enviada e com revisão pendente.
-- **Versão de desenvolvimento 1.4.0:** barra minimalista integrada ao X, GIF direto (primeiros 8 segundos), timeline com duas alças, nomes de arquivo aprimorados e Pix opcional. **Não enviada às lojas ainda.**
+- **Chrome Web Store:** versão 1.3.0 enviada e em revisão.
+- **Versão de desenvolvimento 1.5.0:** menu compacto com MP4, GIF de 8 segundos ou inteiro, fotos, modal de edição no X, temas claro/escuro e apoio por Pix no final do menu. **Não enviada às lojas ainda.**
 - **Site:** XClip Studio 1.4 publicado a partir do diretório raiz deste repositório. A geração de GIF com arquivos locais foi testada. A resolução de links públicos do X é experimental.
 
 ## Endereços
