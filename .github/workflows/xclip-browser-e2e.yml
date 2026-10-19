@@ -1,0 +1,22 @@
+name: XClip real browser test
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tests/xclip-site-e2e.py"
+      - ".github/workflows/xclip-browser-e2e.yml"
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Chromium automated test
+        run: |
+          python3 -m venv /tmp/xclip-browser
+          /tmp/xclip-browser/bin/pip install -q playwright
+          if [ ! -x /usr/bin/google-chrome ]; then
+            /tmp/xclip-browser/bin/playwright install chromium
+          fi
+      - name: Test live GitHub Pages to MP4 and GIF
+        run: /tmp/xclip-browser/bin/python tests/xclip-site-e2e.py
