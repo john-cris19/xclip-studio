@@ -53,12 +53,24 @@
     try{const data=await getJson(`${apiBase()}/api/resolve?url=${encodeURIComponent(raw)}`);
       if(!Array.isArray(data.formats)||!data.formats.length)throw Error(t('noFormats'));
       formats=data.formats;activeTweet=data.tweetId;const select=$('quality');select.replaceChildren();for(const f of formats){const opt=document.createElement('option');opt.value=f.id;opt.textContent=f.label;select.append(opt);} $('resolved').hidden=false;linkStatus(data.notice||t('ready'),'success');
-    }catch(e){linkStatus(t('error')+' Tente outro post público com MP4, ou selecione um vídeo do aparelho. '+(e.message||''),'error');}finally{$('resolve').disabled=false;}
+    }catch(e){linkStatus('Este link não pôde ser processado: '+(e.message||'Mídia pública indisponível.')+' Se for um post protegido, use um vídeo do aparelho.','error');}finally{$('resolve').disabled=false;}
   });
   const videoUrl=()=>`${apiBase()}/api/video?tweet=${encodeURIComponent(activeTweet)}&q=${encodeURIComponent($('quality').value)}`;
-  $('downloadDirect').addEventListener('click',()=>{
+  $('downloadDirect').addEventListener('click',async()=>{
     if(!activeTweet||!validateApi())return;
-    const a=document.createElement('a');a.href=videoUrl()+'&download=1';a.target='_blank';a.rel='noopener noreferrer';document.body.append(a);a.click();a.remove();
+    const btn=$('downloadDirect');btn.disabled=true;
+    linkStatus('Preparando download do MP4…');
+    try {
+      const res=await fetch(videoUrl());
+      if(!res.ok){let detail='HTTP '+res.status;try{detail=(await res.json()).error||detail}catch{};throw Error(detail)}
+      if(!String(res.headers.get('Content-Type')||'').includes('video/mp4'))throw Error('A resposta não é um vídeo MP4.');
+      const blob=await res.blob();
+      if(!blob.size||blob.size>150_000_000)throw Error('Vídeo indisponível ou excede 150 MB.');
+      const label=($('quality').selectedOptions[0]?.textContent||'MP4').replace(/[^a-zA-Z0-9]/g,'_');
+      save(blob,'XClip_'+activeTweet+'_'+label+'.mp4');
+      linkStatus('Download iniciado! Confira a pasta de downloads.','success');
+    }catch(e){linkStatus('Não foi possível baixar: '+e.message,'error')}
+    finally{btn.disabled=false}
   });
   $('openEditor').addEventListener('click',async()=>{if(!activeTweet||!validateApi())return;const button=$('openEditor');button.disabled=true;linkStatus(t('loading'));try{const r=await fetch(videoUrl());if(!r.ok)throw Error(`HTTP ${r.status}`);const b=await r.blob();if(b.size>150_000_000)throw Error('Arquivo muito grande');await loadBlob(b,`XClip_${activeTweet}_${$('quality').selectedOptions[0]?.textContent||'video'}.mp4`);linkStatus(t('ready'),'success');$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){linkStatus(t('error')+' '+e.message,'error');}finally{button.disabled=false;}});
   async function quickGif(which,fromPost=false){
