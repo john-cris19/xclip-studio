@@ -1,1 +1,2 @@
-// Experimental resolver: public X MP4 only. Uses Cloudflare and public FxEmbed metadata fallback.\nwindow.XCLIP_CONFIG = Object.freeze({apiBaseUrl:'https://xclip-link-fallback.johncrissaints.workers.dev'});\n
+// Public X video resolution service (beta).
+window.XCLIP_CONFIG = Object.freeze({apiBaseUrl: 'https://xclip-link-fallback.johncrissaints.workers.dev'});
