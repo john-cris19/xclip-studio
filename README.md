@@ -21,3 +21,10 @@ XClip é uma extensão independente para baixar vídeos MP4 públicos do X/Twitt
 O GIF direto abre um processamento em uma aba inativa e pode demorar conforme o navegador. Nem todos os posts do X expõem MP4 compatível, e o XClip não contorna DRM. A resolução de links no site consulta um serviço experimental Cloudflare, que pode usar metadados públicos do FxEmbed/FxTwitter, conforme descrito na política de privacidade.
 
 O projeto não tem vínculo oficial com o X/Twitter, Google ou Microsoft. Respeite os direitos dos autores.
+
+
+## Testes do serviço web — 19/10/2026
+
+O serviço Cloudflare foi corrigido e agora consulta diretamente os metadados públicos de MP4 através do FxTwitter/FxEmbed. O teste automatizado no GitHub Actions confirmou a obtenção de resoluções e bytes válidos de MP4 de quatro posts públicos reais; em um deles, o arquivo completo foi baixado e convertido em GIF animado válido. Um teste isolado no navegador confirmou o fluxo da página de resolução → download MP4 → GIF com respostas de API simuladas. Isso não garante funcionamento em conteúdo privado, bloqueado ou indisponível.
+
+A seção 'Beta' no site aponta para o [GitHub Releases](https://github.com/john-cris19/xclip-studio/releases) e o guia de instalação. **O ZIP da extensão ainda precisa ser anexado a uma Release pública**; a publicação nas lojas continua independente.
