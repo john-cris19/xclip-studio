@@ -7,6 +7,20 @@
   let activeTweet=null,formats=[];
   let directGifBusy=false;
   const PIX='152a48f8-adeb-49b9-9999-0b3d7cff6e14';
+  const themeButton=$('theme-toggle');
+  function setTheme(mode) {
+    const selected=mode==='light'?'light':'dark';
+    document.documentElement.dataset.theme=selected;
+    themeButton?.setAttribute('aria-pressed',String(selected==='dark'));
+    const glyph=themeButton?.querySelector('span');if(glyph)glyph.textContent=selected==='dark'?'☀':'☾';
+    const label=$('theme-label');if(label)label.textContent=selected==='dark'?'Claro':'Escuro';
+    try{localStorage.setItem('xclip-theme',selected)}catch{}
+  }
+  let savedTheme='dark';
+  try{savedTheme=localStorage.getItem('xclip-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}catch{savedTheme=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}
+  setTheme(savedTheme);
+  themeButton?.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+
   const validateApi=()=>typeof config.apiBaseUrl==='string'&&/^https:\/\/[a-zA-Z0-9.-]+\/?$/.test(config.apiBaseUrl);
   const apiBase=()=>String(config.apiBaseUrl||'').replace(/\/$/,'');
   function t(key){return languages[$('lang').value]?.[key]||languages.pt_BR?.[key]||key;}
