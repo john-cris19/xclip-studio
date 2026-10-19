@@ -1,11 +1,11 @@
-# XClip 1.3.0 — Instalação manual da beta
+# XClip 1.6.0 — Instalação manual da beta
 
-**Status (18/10/2026):** a extensão XClip 1.3.0 foi enviada para análise do Microsoft Edge Add-ons. A Chrome Web Store ainda está na fase de cadastro. **Esta instalação manual não é a publicação nas lojas.**
+**Status (18/10/2026):** a extensão XClip 1.6.0 foi enviada para análise do Microsoft Edge Add-ons. A Chrome Web Store ainda está na fase de cadastro. **Esta instalação manual não é a publicação nas lojas.**
 
 ## Como instalar
 
-1. No repositório, abra **Releases** e baixe o arquivo `XClip-1.3.0-Edge-Chrome.zip` quando ele estiver disponível.
-2. Extraia todo o ZIP para uma pasta permanente (por exemplo `Documentos/XClip-1.3.0`). Não apague essa pasta depois da instalação.
+1. No repositório, abra **Releases** e baixe o arquivo `XClip-1.6.0-Edge-Chrome.zip` quando ele estiver disponível.
+2. Extraia todo o ZIP para uma pasta permanente (por exemplo `Documentos/XClip-1.6.0`). Não apague essa pasta depois da instalação.
 3. No Chrome, abra `chrome://extensions`. No Edge, abra `edge://extensions`.
 4. Ative **Modo do desenvolvedor**.
 5. Clique em **Carregar sem compactação / Load unpacked**.
@@ -24,4 +24,4 @@
 Privacidade: [Política de privacidade](https://john-cris19.github.io/xclip-studio/privacy.html)  
 Contato: [nymostudioficial@gmail.com](mailto:nymostudioficial@gmail.com)
 
-> **Para publicar a beta:** o mantenedor deve criar uma *GitHub Release* chamada `v1.3.0-beta`, anexar o ZIP original e publicar a release. Não ofereça a URL da loja como oficial até aprovação.
+> **Para publicar a beta:** o mantenedor deve criar uma *GitHub Release* chamada `v1.6.0-beta`, anexar o ZIP original e publicar a release. Não ofereça a URL da loja como oficial até aprovação.
