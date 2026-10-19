@@ -1,0 +1,33 @@
+name: XClip public smoke test
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "config.js"
+      - "studio.js"
+      - ".github/workflows/xclip-smoke.yml"
+jobs:
+  public-urls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Test published site config
+        shell: bash
+        run: |
+          curl -fsSL --retry 2 --max-time 18 "https://john-cris19.github.io/xclip-studio/config.js" -o config.js
+          grep -q 'window.XCLIP_CONFIG' config.js
+          grep -q 'xclip-link-fallback' config.js
+          echo "Site config reachable"
+      - name: Test Cloudflare resolver health
+        shell: bash
+        run: |
+          curl -fsSL --retry 2 --max-time 20 "https://xclip-link-fallback.johncrissaints.workers.dev/api/health"
+      - name: Diagnose a public X example (non-blocking)
+        shell: bash
+        run: |
+          curl -sS -L --max-time 30 --get \
+            --data-urlencode "url=https://x.com/TheMagicBR/status/2111961692557222032" \
+            "https://xclip-link-fallback.johncrissaints.workers.dev/api/resolve" \
+            -o /tmp/xclip-resolve.json -w 'status:%{http_code}\n'
+          head -c 900 /tmp/xclip-resolve.json
+          echo
