@@ -57,3 +57,8 @@ Ao usar no site a opção de colar um link de postagem pública do X, a URL info
 ### Resolução complementar de metadados (site)
 
 Para links públicos não resolvidos diretamente, o serviço web XClip hospedado na Cloudflare pode consultar a API pública **FxEmbed/FxTwitter** utilizando o identificador público da publicação. Isso significa que um terceiro pode processar essa consulta de metadados. O arquivo MP4 pode ser transportado pela Cloudflare para o download solicitado. Essa integração não se aplica à edição de vídeos carregados localmente pelo usuário.
+
+
+## Downloads de imagens (versão 1.5.0)
+
+A extensão pode acessar URLs públicas de fotos de postagens do X hospedadas em `https://pbs.twimg.com/media/` somente para salvar imagens que o usuário selecionou. O mesmo controle Baixar também oferece vídeos MP4, GIFs e edição. A permissão para acessar `pbs.twimg.com` não concede acesso a senhas ou mensagens privadas.
