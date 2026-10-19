@@ -57,3 +57,37 @@ html[data-theme="light"] .tag,html[data-theme="light"] .step,html[data-theme="li
 html[data-theme="light"] .preview-placeholder small{color:#acbcc7!important}html[data-theme="light"] .unavailable{color:#976000!important}
 @media(max-width:920px){.source-pane{border-right:0!important;border-bottom:1px solid var(--line)!important}}
 @media(max-width:620px){.top{gap:8px!important}.brand{min-width:unset!important}.theme-toggle{margin:0!important;padding:6px 9px!important}.theme-toggle #theme-label{display:none!important}nav{gap:9px!important}.studio-grid .pane{padding:12px!important}.hero{padding:21px 0!important}.hero-art{display:none!important}.hero h1{font-size:41px!important}}
+
+
+/* v1.6 — mobile-first and softened light theme, no fake filmstrip */
+html[data-theme=light]{--bg:#f1f4f7;--surface:#f7f9fb;--panel:#f7f9fb;--line:#dce3e9;--ink:#17212b;--muted:#586879}
+html[data-theme=light] body{background:#f1f4f7!important}html[data-theme=light] .studio-grid .pane{background:#f7f9fb!important}
+html[data-theme=light] .header,html[data-theme=light] .installcard,html[data-theme=light] .privacy-cards>div{background:#f7f9fb!important}
+html[data-theme=light] .inputrow input,html[data-theme=light] .select{background:#f1f4f7!important}
+.trim-frames{display:none!important}.trim-rail{margin-top:14px!important}
+.clip-player{display:flex;align-items:center;gap:10px;padding:10px 1px;margin:4px 0;color:var(--ink)}.clip-player[hidden]{display:none!important}
+.clip-player button{border:0;border-radius:50%;background:#1d9bf0;color:white;font-size:14px;min-width:34px;min-height:34px}.clip-player input{min-width:0;flex:1;accent-color:#1d9bf0}.clip-player strong{font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.trim-head strong{font-weight:800;font-variant-numeric:tabular-nums}
+@media(max-width:640px){
+ .shell{width:calc(100% - 22px)!important}
+ .top nav{display:none!important}
+ .brand{font-size:20px!important}
+ main.shell{display:flex;flex-direction:column}
+ #tool{order:-1;margin-top:0!important}
+ .tool-section{padding-top:16px!important}
+ .hero{min-height:0!important;padding:16px 0!important;grid-template-columns:1fr!important}
+ .hero h1{font-size:32px!important;line-height:1.05!important;letter-spacing:-1.5px!important}
+ .hero .facts{gap:6px;flex-wrap:wrap}
+ .sectionhead h2{font-size:24px!important}
+ .studio-grid{border-radius:12px!important}
+ .studio-grid .pane{padding:12px 10px!important}
+ .inputrow input{min-width:0!important;width:100%}
+ .inputrow button{white-space:nowrap}
+ .preview{min-height:185px!important;height:210px!important}
+ .gif-shortcuts{flex-wrap:wrap!important}
+ .editfields .two{grid-template-columns:1fr 1fr!important}
+ .trim-shell{padding:10px 8px!important}
+ .trim-rail input::-webkit-slider-thumb{width:24px!important;height:32px!important}
+ .installgrid,.privacy-cards{grid-template-columns:1fr!important}
+ .donate-inline code{font-size:11px}
+}
