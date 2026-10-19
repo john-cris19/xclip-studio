@@ -31,3 +31,29 @@ jobs:
             -o /tmp/xclip-resolve.json -w 'status:%{http_code}\n'
           head -c 900 /tmp/xclip-resolve.json
           echo
+
+      - name: Diagnose resolver upstream and test known video
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,urllib.request,urllib.parse
+          samples=['1548602399862013953','2111668932268687822','2111795836464288080']
+          for id in samples:
+            endpoints=[
+              'https://api.fxtwitter.com/dangeredwolf/status/'+id,
+              'https://api.fxtwitter.com/2/status/'+id,
+              'https://cdn.syndication.twimg.com/tweet-result?id='+id+'&lang=en',
+              'https://xclip-link-fallback.johncrissaints.workers.dev/api/resolve?url='+urllib.parse.quote('https://x.com/dangeredwolf/status/'+id,safe=''),
+            ]
+            for url in endpoints:
+              try:
+                req=urllib.request.Request(url,headers={'User-Agent':'XClip/1.6 (public media diagnostics)','Accept':'application/json'})
+                with urllib.request.urlopen(req,timeout=12) as res:
+                  text=res.read(120000).decode('utf-8','replace');status=res.status
+                try:
+                  obj=json.loads(text);summ={'keys':list(obj)[:12], 'code':obj.get('code'),'message':obj.get('message'),'error':obj.get('error'),'media':(obj.get('tweet') or obj.get('status') or {}).get('media'),'formats':obj.get('formats')}
+                  if summ.get('media'):summ['media']=str(summ['media'])[:380]
+                  print(id,url.split('/')[2],url.split('/')[3][:30],status,summ,flush=True)
+                except Exception as e:print(id,url[:55],status,text[:180],flush=True)
+              except Exception as e:print(id,url[:55],'ERROR',str(e)[:150],flush=True)
+          PY
