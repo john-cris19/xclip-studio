@@ -49,7 +49,9 @@ with sync_playwright() as pw:
     safe_mp4_supported=page.evaluate("() => typeof MediaRecorder!=='undefined' && MediaRecorder.isTypeSupported('video/mp4;codecs=\\\"avc1.42E01E\\\"')")
     print('SAFE MP4 CODEC SUPPORTED:',safe_mp4_supported,flush=True)
     if safe_mp4_supported:
-        with page.expect_download(timeout=120000) as dl:
+        # MP4 video codec support does not imply AAC support. Test video-only reconstruction first.
+        page.locator('#keepAudio').uncheck()
+        with page.expect_download(timeout=45000) as dl:
             page.locator('#safeDownload').click()
         cleaned=dl.value
         cleaned.save_as('/tmp/xclip-rebuilt.mp4')
