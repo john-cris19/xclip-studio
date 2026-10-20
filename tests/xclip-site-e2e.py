@@ -12,6 +12,17 @@ with sync_playwright() as pw:
     errors=[]
     page.on('pageerror', lambda err: errors.append(str(err)))
     page.goto(url,wait_until='domcontentloaded',timeout=35000)
+    # Security: website must load its format-verification module and expose reconstructed MP4 option.
+    page.wait_for_function("() => !!window.XClipSafe && !!document.querySelector('#safeDownload')",timeout=20000)
+    safety=page.evaluate("""async () => {
+      const fake = new Blob(['<script>not video</script>'],{type:'video/mp4'});
+      const good = new Blob([new Uint8Array([0,0,0,24,102,116,121,112,105,115,111,109,0,0,0,0])],{type:'video/mp4'});
+      let blocked=false;try{await XClipSafe.verify(fake,'video')}catch{blocked=true}
+      let accepted=false;try{accepted=(await XClipSafe.verify(good,'video'))==='video/mp4'}catch{}
+      return {blocked,accepted};
+    }""")
+    print('XCLIP SAFE SIGNATURE CHECK:',safety,flush=True)
+    assert safety['blocked'] and safety['accepted']
     page.locator('#postUrl').fill(post)
     page.locator('#resolve').click()
     try:
