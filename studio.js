@@ -184,6 +184,11 @@
     const btn=$('safeDownload');btn.disabled=true;linkStatus('Verificando o vídeo e preparando um MP4 reconstruído…');
     try{
       if(!recordingOptions(false).some(x=>x.includes('video/mp4')))throw Error('Este navegador não oferece recodificação MP4. O XClip não pode prometer um MP4 limpo neste dispositivo.');
+      if($('keepAudio').checked && !recordingOptions(true).some(x=>x.includes('video/mp4'))){
+        const confirmed=window.confirm('Seu navegador não oferece codificação MP4 com áudio. Deseja reconstruir o MP4 SEM ÁUDIO? Escolha Cancelar para manter suas opções atuais.');
+        if(!confirmed){linkStatus('Reconstrução cancelada: o áudio do original não foi alterado.');return;}
+        $('keepAudio').checked=false;
+      }
       const res=await fetch(videoUrl());if(!res.ok)throw Error('Download original falhou (HTTP '+res.status+').');
       const blob=await res.blob();await XClipSafe.verify(blob,'video');
       await loadBlob(blob,'XClip_'+activeTweet+'.mp4');
