@@ -65,7 +65,7 @@
       if(!res.ok){let detail='HTTP '+res.status;try{detail=(await res.json()).error||detail}catch{};throw Error(detail)}
       if(!String(res.headers.get('Content-Type')||'').includes('video/mp4'))throw Error('A resposta não é um vídeo MP4.');
       const blob=await res.blob();
-      if(!blob.size||blob.size>150_000_000)throw Error('Vídeo indisponível ou excede 150 MB.');
+      await XClipSafe.verify(blob,'video');
       const label=($('quality').selectedOptions[0]?.textContent||'MP4').replace(/[^a-zA-Z0-9]/g,'_');
       save(blob,'XClip_'+activeTweet+'_'+label+'.mp4');
       linkStatus('Download iniciado! Confira a pasta de downloads.','success');
@@ -99,7 +99,7 @@
   $('gifFullLocal').addEventListener('click',()=>void quickGif('full'));
   $('file').addEventListener('change',async()=>{const file=$('file').files?.[0];if(!file)return;try{await loadBlob(file,file.name);$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){editorStatus(t('error')+' '+e.message,'error');}});
   function waitEvent(el,name,ms=14000){return new Promise((res,rej)=>{const timer=setTimeout(()=>{clean();rej(Error('Video timeout'));},ms);function clean(){clearTimeout(timer);el.removeEventListener(name,onSuccess);el.removeEventListener('error',onError);}function onSuccess(){clean();res();}function onError(){clean();rej(Error('Video decoding error'));}el.addEventListener(name,onSuccess,{once:true});el.addEventListener('error',onError,{once:true});});}
-  async function loadBlob(blob,name){if(!blob.size)throw Error('Empty file');if(srcBlob)URL.revokeObjectURL(srcBlob);srcBlob=URL.createObjectURL(blob);currentSource={name,size:blob.size};video.src=srcBlob;video.load();await waitEvent(video,'loadedmetadata');const dur=Number(video.duration);if(!(dur>.05)||!video.videoWidth)throw Error('Invalid video');$('noVideo').hidden=true;video.style.display='block';$('export').disabled=false;
+  async function loadBlob(blob,name){await XClipSafe.verify(blob,'video');if(srcBlob)URL.revokeObjectURL(srcBlob);srcBlob=URL.createObjectURL(blob);currentSource={name,size:blob.size};video.src=srcBlob;video.load();await waitEvent(video,'loadedmetadata');const dur=Number(video.duration);if(!(dur>.05)||!video.videoWidth)throw Error('Invalid video');$('noVideo').hidden=true;video.style.display='block';$('export').disabled=false;
     $('start-slider').max=String(dur);$('end-slider').max=String(dur);$('end').value=String(Math.round(dur*10)/10);$('end').max=String(dur);$('start').max=String(Math.max(0,dur-.1));$('whole').checked=true;syncTrim();$('gif8Local').disabled=false;$('gifFullLocal').disabled=false;$('videoMeta').textContent=`${name} · ${video.videoWidth}×${video.videoHeight} · ${Math.ceil(dur)}s · ${(blob.size/1048576).toFixed(1)} MB`;editorStatus(t('ready'),'success');}
   function clipRange(){const dur=Number(video.duration)||0;return $('whole').checked?{start:0,end:dur}:{start:Number($('start').value)||0,end:Number($('end').value)||dur};}
   function syncPreview(){const rg=clipRange(),length=Math.max(0,rg.end-rg.start),elapsed=Math.max(0,Math.min(length,video.currentTime-rg.start));
@@ -159,14 +159,14 @@
     const result=gif.finish();save(result,`${stem()}_${Math.round(rg.start*10)}-${Math.round(rg.end*10)}s.gif`);editorStatus(t('done'),'success');
   }
   function recordingOptions(audio){if(typeof MediaRecorder==='undefined')return [];const candidates=audio?['video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm']:['video/mp4;codecs="avc1.42E01E"','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];return candidates.filter(m=>MediaRecorder.isTypeSupported(m));}
-  async function videoExport(rg,r){if(typeof MediaRecorder==='undefined'||typeof HTMLCanvasElement.prototype.captureStream!=='function')throw Error('Video encoding not supported in this browser.');
+  async function videoExport(rg,r,safe=false){if(typeof MediaRecorder==='undefined'||typeof HTMLCanvasElement.prototype.captureStream!=='function')throw Error('Video encoding not supported in this browser.');
     const canvas=document.createElement('canvas');canvas.width=r.outW;canvas.height=r.outH;const ctx=canvas.getContext('2d');const stream=canvas.captureStream(30);
     let audioCtx=null,audioSource=null,audioDest=null,recorder=null,stop=false,frame=0,started=false;
     try{
       await seek(rg.start);let hasAudio=false;
       if($('keepAudio').checked&&(window.AudioContext||window.webkitAudioContext)){
         try{const A=window.AudioContext||window.webkitAudioContext;audioCtx=new A();audioSource=audioCtx.createMediaElementSource(video);audioDest=audioCtx.createMediaStreamDestination();audioSource.connect(audioDest);await audioCtx.resume();const track=audioDest.stream.getAudioTracks()[0];if(track){stream.addTrack(track);hasAudio=true;}}catch(e){console.warn('Audio unavailable:',e);}}
-      const choices=recordingOptions(hasAudio);for(const mime of choices){try{recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:1800000});break;}catch(_) {}}
+      const choices=recordingOptions(hasAudio).filter(mime=>!safe||mime.includes('video/mp4'));if(safe&&!choices.length)throw Error('Seu navegador não suporta gerar MP4 novo. Não vou oferecer um WebM fingindo ser MP4 limpo. Tente outro navegador ou use o arquivo original, sabendo que não foi reconstruído.');for(const mime of choices){try{recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:1800000});break;}catch(_) {}}
       if(!recorder)throw Error('Video codec not supported');const chunks=[];
       const finished=new Promise((resolve,reject)=>{recorder.addEventListener('dataavailable',e=>{if(e.data?.size)chunks.push(e.data);});recorder.addEventListener('stop',resolve,{once:true});recorder.addEventListener('error',e=>reject(e.error||Error('Recording error')),{once:true});});
       const stopRecorder=()=>{if(stop)return;stop=true;cancelAnimationFrame(frame);video.pause();if(recorder.state!=='inactive')recorder.stop();};
@@ -179,6 +179,22 @@
       if(audioSource){const replacement=document.createElement('video');replacement.id='preview';replacement.controls=true;replacement.playsInline=true;replacement.preload='metadata';replacement.style.display='block';replacement.src=srcBlob;video.replaceWith(replacement);video=replacement;}
     }
   }
+  $('safeDownload').addEventListener('click',async()=>{
+    if(exporting||!activeTweet||!validateApi())return;
+    const btn=$('safeDownload');btn.disabled=true;linkStatus('Verificando o vídeo e preparando um MP4 reconstruído…');
+    try{
+      if(!recordingOptions(false).some(x=>x.includes('video/mp4')))throw Error('Este navegador não oferece recodificação MP4. O XClip não pode prometer um MP4 limpo neste dispositivo.');
+      const res=await fetch(videoUrl());if(!res.ok)throw Error('Download original falhou (HTTP '+res.status+').');
+      const blob=await res.blob();await XClipSafe.verify(blob,'video');
+      await loadBlob(blob,'XClip_'+activeTweet+'.mp4');
+      $('exportType').value='video';$('exportType').dispatchEvent(new Event('change'));$('whole').checked=true;syncTrim();
+      exporting=true;cancelled=false;$('progress').hidden=false;$('progress').value=0;$('cancel').hidden=false;
+      // Audio requires a supported MP4 audio codec; do not silently strip audio.
+      await videoExport({start:0,end:video.duration},region(),true);
+      linkStatus('O navegador iniciou o download do MP4 reconstruído. Metadados do original não são copiados.','success');
+    }catch(e){linkStatus('Versão reconstruída indisponível: '+(e.message||e),'error');}
+    finally{exporting=false;btn.disabled=false;$('progress').hidden=true;$('cancel').hidden=true;}
+  });
   // Editor audio uses one MediaElementAudioSourceNode per video element.
   // Replacing the element after recording allows the next export to create a new source.
   let getActiveVideo=()=>document.getElementById('preview');
