@@ -45,6 +45,20 @@ with sync_playwright() as pw:
     gif.save_as('/tmp/xclip-e2e.gif')
     assert pathlib.Path('/tmp/xclip-e2e.gif').read_bytes().startswith(b'GIF89a')
     print('PUBLIC GIF SUCCESS:',gif.suggested_filename,pathlib.Path('/tmp/xclip-e2e.gif').stat().st_size,flush=True)
+    # The reconstructed MP4 feature is optional: do not pretend to sanitize when the codec is absent.
+    safe_mp4_supported=page.evaluate("() => typeof MediaRecorder!=='undefined' && MediaRecorder.isTypeSupported('video/mp4;codecs=\\\"avc1.42E01E\\\"')")
+    print('SAFE MP4 CODEC SUPPORTED:',safe_mp4_supported,flush=True)
+    if safe_mp4_supported:
+        with page.expect_download(timeout=120000) as dl:
+            page.locator('#safeDownload').click()
+        cleaned=dl.value
+        cleaned.save_as('/tmp/xclip-rebuilt.mp4')
+        assert pathlib.Path('/tmp/xclip-rebuilt.mp4').read_bytes()[4:8]==b'ftyp'
+        print('REBUILT MP4 SUCCESS:',cleaned.suggested_filename,pathlib.Path('/tmp/xclip-rebuilt.mp4').stat().st_size,flush=True)
+    else:
+        page.locator('#safeDownload').click()
+        page.wait_for_function("() => document.querySelector('#linkStatus').textContent.includes('não oferece recodificação')",timeout=12000)
+        print('REBUILT MP4 DISABLED CORRECTLY (NO CODEC)',flush=True)
     print('BROWSER ERRORS:',errors,flush=True)
     assert not errors
     browser.close()
