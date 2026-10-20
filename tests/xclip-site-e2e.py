@@ -50,7 +50,7 @@ with sync_playwright() as pw:
     print('SAFE MP4 CODEC SUPPORTED:',safe_mp4_supported,flush=True)
     if safe_mp4_supported:
         # MP4 video codec support does not imply AAC support. Test video-only reconstruction first.
-        page.locator('#keepAudio').uncheck()
+        page.evaluate("() => { document.querySelector('#keepAudio').checked=false; }")
         with page.expect_download(timeout=45000) as dl:
             page.locator('#safeDownload').click()
         cleaned=dl.value
