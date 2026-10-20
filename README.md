@@ -28,3 +28,8 @@ O projeto não tem vínculo oficial com o X/Twitter, Google ou Microsoft. Respei
 O serviço Cloudflare foi corrigido e agora consulta diretamente os metadados públicos de MP4 através do FxTwitter/FxEmbed. O teste automatizado no GitHub Actions confirmou a obtenção de resoluções e bytes válidos de MP4 de quatro posts públicos reais; em um deles, o arquivo completo foi baixado e convertido em GIF animado válido. Um teste isolado no navegador confirmou o fluxo da página de resolução → download MP4 → GIF com respostas de API simuladas. Isso não garante funcionamento em conteúdo privado, bloqueado ou indisponível.
 
 A seção 'Beta' no site aponta para o [GitHub Releases](https://github.com/john-cris19/xclip-studio/releases) e o guia de instalação. **O ZIP da extensão ainda precisa ser anexado a uma Release pública**; a publicação nas lojas continua independente.
+
+
+## XClip Safe Media (beta 1.7.0)
+
+Opções experimentais de mídia reconstruída: PNG a partir de pixels, GIF gerado pelo codificador local, MP4 recodificado quando o navegador suporta. Os downloads originais continuam disponíveis e não são sanitizados. O recurso verifica assinaturas reais de arquivo, porém não é antivírus e não garante proteção absoluta contra falhas de decodificação. Consulte [SEGURANCA.md](SEGURANCA.md) para limites e ameaças. A versão 1.7.0 está em teste e não substitui automaticamente os pacotes em revisão no Edge e Chrome.
