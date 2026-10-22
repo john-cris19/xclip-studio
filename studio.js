@@ -11,7 +11,7 @@
   let readyUrl=null,readyFile=null;
   function resetMobileSave(){ $('mobile-save-panel').hidden=true;if(readyUrl){URL.revokeObjectURL(readyUrl);readyUrl=null;}readyFile=null; }
   function mobileSave(blob,name){
-    resetMobileSave();const filename=name.replace(/[^\\p{L}\\p{N}._-]/gu,'_');
+    resetMobileSave();const filename=name.replace(/[^\p{L}\p{N}._-]/gu,'_');
     readyUrl=URL.createObjectURL(blob);readyFile=new File([blob],filename,{type:blob.type||'application/octet-stream'});
     $('mobile-save-link').href=readyUrl;$('mobile-save-link').download=filename;
     $('mobile-save-title').textContent='Seu '+(filename.endsWith('.gif')?'GIF':'vídeo')+' está pronto!';
