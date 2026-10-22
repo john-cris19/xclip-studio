@@ -31,7 +31,14 @@ with sync_playwright() as pw:
     with page.expect_download(timeout=20000) as dl:
         page.locator('#mobile-save-link').click()
     gif=dl.value;gif.save_as('/tmp/xclip-mobile.gif')
-    assert pathlib.Path('/tmp/xclip-mobile.gif').read_bytes().startswith(b'GIF89a')
+    blob=pathlib.Path('/tmp/xclip-mobile.gif').read_bytes()
+    assert blob.startswith(b'GIF89a')
+    width=int.from_bytes(blob[6:8],'little');height=int.from_bytes(blob[8:10],'little')
+    assert width>=120 and height>=100,(width,height)
+    assert len(blob)>10000,len(blob)
+    assert gif.suggested_filename.endswith('.gif'),gif.suggested_filename
+    assert page.locator('#mobile-save-title').inner_text().startswith('Seu GIF')
+    print('MOBILE GIF DIMENSIONS:',width,height,flush=True)
     print('MOBILE GIF PASS:',gif.suggested_filename,pathlib.Path('/tmp/xclip-mobile.gif').stat().st_size,flush=True)
     assert not errors,errors
     print('MOBILE JS ERRORS:',errors,flush=True)
