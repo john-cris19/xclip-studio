@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "tests/xclip-site-e2e.py"
+      - "tests/xclip-mobile-e2e.py"
       - ".github/workflows/xclip-browser-e2e.yml"
 jobs:
   browser:
@@ -20,3 +21,6 @@ jobs:
           fi
       - name: Test live GitHub Pages to MP4 and GIF
         run: /tmp/xclip-browser/bin/python tests/xclip-site-e2e.py
+
+      - name: Test Android-style mobile download and GIF save
+        run: /tmp/xclip-browser/bin/python tests/xclip-mobile-e2e.py
