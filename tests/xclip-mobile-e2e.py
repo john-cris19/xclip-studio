@@ -12,7 +12,7 @@ with sync_playwright() as pw:
     page=ctx.new_page()
     errors=[]
     page.on('pageerror',lambda err: errors.append(str(err)))
-    page.goto(BASE,wait_until='domcontentloaded',timeout=35000)
+    page.goto(BASE+'?mobile-test=171-final',wait_until='domcontentloaded',timeout=35000)
     print('MOBILE VIEWPORT:',page.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})'),flush=True)
     page.locator('#postUrl').fill(POST)
     page.locator('#resolve').click()
@@ -25,9 +25,11 @@ with sync_playwright() as pw:
     vid=dl.value;vid.save_as('/tmp/xclip-mobile.mp4')
     assert pathlib.Path('/tmp/xclip-mobile.mp4').read_bytes()[4:8]==b'ftyp'
     print('MOBILE MP4 PASS:',vid.suggested_filename,pathlib.Path('/tmp/xclip-mobile.mp4').stat().st_size,flush=True)
+    assert page.locator('#size option[value="240"]').count()==1, '240px option not deployed yet'
     page.locator('#gifShortDirect').click()
     page.locator('#mobile-save-panel').wait_for(state='visible',timeout=120000)
     print('MOBILE GIF READY:',page.locator('#mobile-save-title').inner_text(),flush=True)
+    print('MOBILE GIF SIZE SELECTION:',page.locator('#size').input_value(),flush=True)
     with page.expect_download(timeout=20000) as dl:
         page.locator('#mobile-save-link').click()
     gif=dl.value;gif.save_as('/tmp/xclip-mobile.gif')
